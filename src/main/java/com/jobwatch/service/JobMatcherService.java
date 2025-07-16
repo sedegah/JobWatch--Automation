@@ -15,26 +15,23 @@ public class JobMatcherService {
 
     // Main method to compute and return sorted job matches
     public List<Job> match(String resume, List<Job> jobs) {
-        logger.info("🔍 Matching resume against {} jobs", jobs.size());
+        logger.info(" Matching resume against {} jobs", jobs.size());
 
         for (Job job : jobs) {
             double score = computeMatchScore(resume, job);
             job.setMatchScore(score);
         }
 
-        // Return top matches sorted by score
         return jobs.stream()
             .sorted((a, b) -> Double.compare(b.getMatchScore(), a.getMatchScore()))
             .collect(Collectors.toList());
     }
 
-    // Compute match score between resume and a single job
     private double computeMatchScore(String resume, Job job) {
         String resumeLower = resume.toLowerCase();
         String jobText = (job.getTitle() + " " + job.getDescription() + " " + 
                           String.join(" ", job.getTags())).toLowerCase();
 
-        // List of technical skills to match
         String[] skills = {
             "java", "spring", "javascript", "react", "node", "mongodb", 
             "postgresql", "docker", "kubernetes", "aws", "azure", "rest",
@@ -50,7 +47,6 @@ public class JobMatcherService {
             }
         }
 
-        // Skill score = (matched skills / total) * 70%
         double skillScore = (matches / (double) totalSkills) * 70;
 
         // Role-based bonus: matching seniority and title
