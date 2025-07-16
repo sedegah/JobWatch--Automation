@@ -69,7 +69,7 @@
 ### 2. Clone Repository
 
 ```bash
-git clone https://github.com/your-username/jobwatch.git
+git clone https://github.com/sedegah/jobwatch.git
 cd jobwatch
 ```
 
