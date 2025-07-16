@@ -31,7 +31,6 @@ public class JobWatchApplication implements CommandLineRunner {
         System.out.println(" Starting Job Watch MVP...");
         System.out.println("=" + "=".repeat(50));
 
-        // Run the job update pipeline once on startup (optional)
         updateJobsAndMatchResume();
 
         System.out.println("\n Job Watch MVP completed successfully!");
@@ -40,10 +39,8 @@ public class JobWatchApplication implements CommandLineRunner {
 
     
     public void updateJobsAndMatchResume() {
-        // Step 1: Clear previous data
         repo.deleteAll();
 
-        // Step 2: Fetch jobs
         System.out.println(" Fetching jobs from RemoteOK and JSearch...");
         List<Job> jobs = fetcher.fetchAll();
 
@@ -53,15 +50,12 @@ public class JobWatchApplication implements CommandLineRunner {
         }
         System.out.println(" Found " + jobs.size() + " jobs");
 
-        // Step 3: Tag jobs with AI
         System.out.println(" Tagging jobs with OpenAI...");
         ai.tag(jobs);
 
-        // Step 4: Save jobs
         System.out.println(" Saving jobs to MongoDB...");
         repo.saveAll(jobs);
 
-        // Step 5: Parse resume safely
         System.out.println(" Parsing resume...");
         String resume = null;
         try {
@@ -70,7 +64,6 @@ public class JobWatchApplication implements CommandLineRunner {
             System.out.println("  Failed to read resume: " + e.getMessage());
         }
 
-        // Step 6: Match resume if valid
         if (resume != null && !resume.trim().isEmpty()) {
             System.out.println(" Finding best matches...");
             List<Job> matches = matcher.match(resume, jobs);
@@ -79,7 +72,6 @@ public class JobWatchApplication implements CommandLineRunner {
             System.out.println("  Resume missing or empty. Skipping matching step.");
         }
 
-        // Step 7: Show job stats
         displayStatistics(jobs);
     }
 
