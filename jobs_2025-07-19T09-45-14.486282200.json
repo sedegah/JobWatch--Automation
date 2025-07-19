@@ -1,0 +1,10 @@
+[ {
+  "id" : null,
+  "title" : "Software Development Engineer (Remote)",
+  "company" : "Clear Demand Inc",
+  "location" : "Phoenix, US",
+  "description" : "The key responsibilities of the SDE-I position in Bungee Tech are\n• Build & maintain high tps, reliable, performant and cost-effective data collection and extraction modules using Node.js & Python, using streaming solutions like Kafka.\n• Deploy, maintain and support these modules on AWS & GCP cloud.\n• Index, archive and retain necessary data in multiple persistence stores like Object stores(S3), Key value store (Dynamo DB), and Elastic Search based on the use case.\n• Manage the quality of data collected using data quality libraries built using SQL/Python/Spark on AWS Glue and exposed as Dashboards for monitoring using AWS Quick sight and Kibana.\n• Restfully abstract the data collected to the downstream applications through a Node.js backend.\n• Collaborate well with engineers, researchers, and data implementation specialists to design and create advanced, elegant and efficient end to end competitive intelligence solutions.\n\nSkills Required:\n• Proven experience as a Software Development Engineer that has built, deployed and operationally supported systems in production.\n• Excellent knowledge of programming languages such as Node.JS, Python\n• Strong understanding of software design patterns, algorithms, and data structures\n• Experience with SQL & NoSQL databases.\n• Good communication and collaboration skills.\n• Works with good ownership and accountability.\n• Ability to work in a fast-paced and dynamic environment.\n• Experience in writing high volume/tps, reliable crawlers and scrapers is a plus.\n• Bachelor's or master's degree in computer science or a related field.",
+  "applyUrl" : "https://www.ziprecruiter.com/c/Clear-Demand-Inc/Job/Software-Development-Engineer-(Remote)/-in-Phoenix,AZ?jid=83cb41e0bde905df&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+  "source" : "JSearch",
+  "postedDate" : "2025-07-18T00:00:00.000Z",
+  "createdAt"

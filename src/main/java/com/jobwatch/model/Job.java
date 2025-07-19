@@ -39,7 +39,6 @@ public class Job {
     private String experienceLevel;
     private boolean isRemote = false;
 
-    // === Constructors ===
     public Job() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
@@ -60,7 +59,6 @@ public class Job {
         this.isRemote = computeRemoteStatus(location, description);
     }
 
-    // === Getters & Setters ===
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -149,7 +147,6 @@ public class Job {
         touch();
     }
 
-    // === Utility ===
     private void touch() {
         this.updatedAt = LocalDateTime.now();
     }
@@ -216,7 +213,6 @@ public class Job {
         return foundTags;
     }
 
-    // === Equality ===
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

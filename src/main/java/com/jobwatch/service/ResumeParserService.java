@@ -27,12 +27,12 @@ public class ResumeParserService {
         File file = new File(filePath);
 
         if (!file.exists()) {
-            logger.warn("❗ Resume file does not exist: {}", filePath);
+            logger.warn(" Resume file does not exist: {}", filePath);
             return null;
         }
 
         if (!filePath.toLowerCase().endsWith(".docx")) {
-            logger.warn("❗ Unsupported resume format (only .docx is supported): {}", filePath);
+            logger.warn(" Unsupported resume format (only .docx is supported): {}", filePath);
             return null;
         }
 

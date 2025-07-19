@@ -37,25 +37,19 @@ public class JobUpdateScheduler {
         System.out.println("=".repeat(60));
 
         try {
-            // Step 1: Clear old data
             repo.deleteAll();
 
-            // Step 2: Fetch
             List<Job> jobs = fetcher.fetchAll();
             System.out.println("Fetched " + jobs.size() + " jobs");
 
             if (jobs.isEmpty()) return;
 
-            // Step 3: Tag with OpenAI
             ai.tag(jobs);
 
-            // Step 4: Save
             repo.saveAll(jobs);
 
-            // Step 5: Parse resume
             String resume = parser.read("resume.docx");
 
-            // Step 6: Match
             if (resume != null && !resume.trim().isEmpty()) {
                 List<Job> matches = matcher.match(resume, jobs);
                 System.out.println("Top 5 Matches:");
