@@ -396,7 +396,7 @@ public class JobFetcherService {
     private List<Job> fetchHubstaffTalent() throws IOException {
         logger.info("Fetching from Hubstaff Talent...");
         List<Job> jobs = new ArrayList<>();
-        Document doc = retryJsoup("https://talent.hubstaff.com", 3);
+        Document doc = retryJsoup("https://talent.hubstaff.com", 2);
         Elements cards = doc.select("div.project-row");
         for (Element card : cards) {
             String title = card.select("h3").text();
