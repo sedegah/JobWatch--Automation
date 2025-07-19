@@ -12,6 +12,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +22,11 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 @Service
 public class JobFetcherService {
 
-    private static final Logger logger = Logger.getLogger(JobFetcherService.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(JobFetcherService.class);
 
     @Value("${rapidapi.key}")
     private String rapidApiKey;
@@ -48,6 +49,42 @@ public class JobFetcherService {
     @Value("${jobwatch.fetch.adzuna.enabled:true}")
     private boolean adzunaEnabled;
 
+    @Value("${jobwatch.fetch.weworkremotely.enabled:true}")
+    private boolean weWorkRemotelyEnabled;
+
+    @Value("${jobwatch.fetch.hubstaff.enabled:true}")
+    private boolean hubstaffEnabled;
+
+    @Value("${jobwatch.fetch.remotewoman.enabled:true}")
+    private boolean remoteWomanEnabled;
+
+    @Value("${jobwatch.fetch.wellfound.enabled:true}")
+    private boolean wellfoundEnabled;
+
+    @Value("${jobwatch.fetch.remotive.enabled:true}")
+    private boolean remotiveEnabled;
+
+    @Value("${jobwatch.fetch.remotecircle.enabled:true}")
+    private boolean remoteCircleEnabled;
+
+    @Value("${jobwatch.fetch.workwave.enabled:true}")
+    private boolean workWaveEnabled;
+
+    @Value("${jobwatch.fetch.aijobs.enabled:true}")
+    private boolean aiJobsEnabled;
+
+    @Value("${jobwatch.fetch.toptal.enabled:true}")
+    private boolean toptalEnabled;
+
+    @Value("${jobwatch.fetch.flexjobs.enabled:true}")
+    private boolean flexJobsEnabled;
+
+    @Value("${jobwatch.fetch.jsremotely.enabled:true}")
+    private boolean jsRemotelyEnabled;
+
+    @Value("${jobwatch.fetch.otta.enabled:true}")
+    private boolean ottaEnabled;
+
     private final OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
@@ -61,14 +98,14 @@ public class JobFetcherService {
         try {
             jobs.addAll(fetchJobgether());
         } catch (Exception e) {
-            logger.warning("Jobgether fetch failed: " + e.getMessage());
+            logger.warn("Jobgether fetch failed: " + e.getMessage());
         }
 
         if (remoteOkEnabled) {
             try {
                 jobs.addAll(fetchRemoteOK());
             } catch (Exception e) {
-                logger.warning("RemoteOK fetch failed: " + e.getMessage());
+                logger.warn("RemoteOK fetch failed: " + e.getMessage());
             }
         }
 
@@ -76,7 +113,7 @@ public class JobFetcherService {
             try {
                 jobs.addAll(fetchAllJSearch());
             } catch (Exception e) {
-                logger.warning("JSearch fetch failed: " + e.getMessage());
+                logger.warn("JSearch fetch failed: " + e.getMessage());
             }
         }
 
@@ -84,7 +121,103 @@ public class JobFetcherService {
             try {
                 jobs.addAll(fetchAdzuna());
             } catch (Exception e) {
-                logger.warning("Adzuna fetch failed: " + e.getMessage());
+                logger.warn("Adzuna fetch failed: " + e.getMessage());
+            }
+        }
+
+        if (weWorkRemotelyEnabled) {
+            try {
+                jobs.addAll(fetchWeWorkRemotely());
+            } catch (Exception e) {
+                logger.warn("WeWorkRemotely fetch failed: " + e.getMessage());
+            }
+        }
+
+        if (hubstaffEnabled) {
+            try {
+                jobs.addAll(fetchHubstaffTalent());
+            } catch (Exception e) {
+                logger.warn("Hubstaff Talent fetch failed: " + e.getMessage());
+            }
+        }
+
+        if (remoteWomanEnabled) {
+            try {
+                jobs.addAll(fetchRemoteWoman());
+            } catch (Exception e) {
+                logger.warn("Remote Woman fetch failed: " + e.getMessage());
+            }
+        }
+
+        if (wellfoundEnabled) {
+            try {
+                jobs.addAll(fetchWellfound());
+            } catch (Exception e) {
+                logger.warn("Wellfound fetch failed: " + e.getMessage());
+            }
+        }
+
+        if (remotiveEnabled) {
+            try {
+                jobs.addAll(fetchRemotive());
+            } catch (Exception e) {
+                logger.warn("Remotive fetch failed: " + e.getMessage());
+            }
+        }
+
+        if (remoteCircleEnabled) {
+            try {
+                jobs.addAll(fetchRemoteCircle());
+            } catch (Exception e) {
+                logger.warn("Remote Circle fetch failed: " + e.getMessage());
+            }
+        }
+
+        if (workWaveEnabled) {
+            try {
+                jobs.addAll(fetchWorkWave());
+            } catch (Exception e) {
+                logger.warn("WorkWave fetch failed: " + e.getMessage());
+            }
+        }
+
+        if (aiJobsEnabled) {
+            try {
+                jobs.addAll(fetchAIJobs());
+            } catch (Exception e) {
+                logger.warn("AI Jobs fetch failed: " + e.getMessage());
+            }
+        }
+
+        if (toptalEnabled) {
+            try {
+                jobs.addAll(fetchToptal());
+            } catch (Exception e) {
+                logger.warn("Toptal fetch failed: " + e.getMessage());
+            }
+        }
+
+        if (flexJobsEnabled) {
+            try {
+                jobs.addAll(fetchFlexJobs());
+            } catch (Exception e) {
+                logger.warn("FlexJobs fetch failed: " + e.getMessage());
+            }
+        }
+
+        if (jsRemotelyEnabled) {
+            try {
+                jobs.addAll(fetchJSRemotely());
+            } catch (Exception e) {
+                logger.warn("JS Remotely fetch failed: " + e.getMessage());
+            }
+        }
+
+        if (ottaEnabled) {
+            try {
+                jobs.addAll(fetchOtta());
+            } catch (Exception e) {
+                logger.warn("Otta fetch failed: " + e.getMessage());
             }
         }
 
@@ -242,6 +375,196 @@ public class JobFetcherService {
         return out;
     }
 
+    private List<Job> fetchWeWorkRemotely() throws IOException {
+        logger.info("Fetching from We Work Remotely...");
+        List<Job> jobs = new ArrayList<>();
+        Document doc = retryJsoup("https://weworkremotely.com", 3);
+        Elements listings = doc.select("section.jobs li");
+        for (Element job : listings) {
+            if (job.className().contains("view-all")) continue;
+            String link = "https://weworkremotely.com" + job.selectFirst("a").attr("href");
+            Document jobPage = retryJsoup(link, 2);
+            String title = jobPage.selectFirst("h1").text();
+            String company = jobPage.selectFirst(".company-card h2").text();
+            String desc = jobPage.select("div.listing-container").text();
+            String posted = LocalDateTime.now().toString();
+            jobs.add(new Job(title, company, "Remote", desc, link, "WeWorkRemotely", posted));
+        }
+        return jobs;
+    }
+
+    private List<Job> fetchHubstaffTalent() throws IOException {
+        logger.info("Fetching from Hubstaff Talent...");
+        List<Job> jobs = new ArrayList<>();
+        Document doc = retryJsoup("https://talent.hubstaff.com", 3);
+        Elements cards = doc.select("div.project-row");
+        for (Element card : cards) {
+            String title = card.select("h3").text();
+            String company = "Hubstaff Client";
+            String desc = card.select("p.description").text();
+            String link = "https://talent.hubstaff.com/search/projects" + card.select("a").attr("href");
+            String posted = LocalDateTime.now().toString();
+            jobs.add(new Job(title, company, "Remote", desc, link, "Hubstaff", posted));
+        }
+        return jobs;
+    }
+
+    private List<Job> fetchRemoteWoman() throws IOException {
+        logger.info("Fetching from Remote Woman...");
+        List<Job> jobs = new ArrayList<>();
+        Document doc = retryJsoup("https://remotewoman.com", 3);
+        Elements rows = doc.select(".job_listings li");
+        for (Element row : rows) {
+            String title = row.select(".position h3").text();
+            String company = row.select(".company h4").text();
+            String link = row.select("a").attr("href");
+            String desc = "Remote job listed for women";
+            String posted = LocalDateTime.now().toString();
+            jobs.add(new Job(title, company, "Remote", desc, link, "RemoteWoman", posted));
+        }
+        return jobs;
+    }
+
+    private List<Job> fetchWellfound() throws IOException {
+        logger.info("Fetching from Wellfound...");
+        List<Job> jobs = new ArrayList<>();
+        Document doc = retryJsoup("https://wellfound.com/jobs", 3);
+        Elements cards = doc.select("div.listings div.styles_component__main__");
+        for (Element card : cards) {
+            try {
+                String title = card.select("a.styles_component__job-title__").text();
+                String company = card.select("div.styles_component__company-name__").text();
+                String desc = card.select("div.styles_component__description__").text();
+                String link = "https://wellfound.com" + card.select("a.styles_component__job-title__").attr("href");
+                jobs.add(new Job(title, company, "Remote", desc, link, "Wellfound", LocalDateTime.now().toString()));
+            } catch (Exception ignored) {
+            }
+        }
+        return jobs;
+    }
+
+    private List<Job> fetchRemotive() throws IOException {
+        logger.info("Fetching from Remotive...");
+        List<Job> jobs = new ArrayList<>();
+        Document doc = retryJsoup("https://remotive.io", 2);
+        Elements listings = doc.select(".job-listing");
+        for (Element job : listings) {
+            String title = job.select(".job-title").text();
+            String company = job.select(".company").text();
+            String desc = job.select(".job-description").text();
+            String link = "https://remotive.io" + job.select("a").attr("href");
+            jobs.add(new Job(title, company, "Remote", desc, link, "Remotive", LocalDateTime.now().toString()));
+        }
+        return jobs;
+    }
+
+    private List<Job> fetchRemoteCircle() throws IOException {
+        logger.info("Fetching from Remote Circle...");
+        List<Job> jobs = new ArrayList<>();
+        Document doc = retryJsoup("https://remotecircle.com/", 3);
+        Elements cards = doc.select("div.job-card");
+        for (Element card : cards) {
+            String title = card.select(".job-title").text();
+            String company = card.select(".company-name").text();
+            String desc = card.select(".job-description").text();
+            String link = card.select("a").attr("href");
+            jobs.add(new Job(title, company, "Remote", desc, link, "RemoteCircle", LocalDateTime.now().toString()));
+        }
+        return jobs;
+    }
+
+    private List<Job> fetchWorkWave() throws IOException {
+        logger.info("Fetching from WorkWave...");
+        List<Job> jobs = new ArrayList<>();
+        Document doc = retryJsoup("https://www.workwave.com/about/careers", 3);
+        Elements rows = doc.select("div.job-listing");
+        for (Element row : rows) {
+            String title = row.select("h3").text();
+            String link = row.select("a").attr("href");
+            String desc = "WorkWave job";
+            jobs.add(new Job(title, "WorkWave", "Remote", desc, link, "WorkWave", LocalDateTime.now().toString()));
+        }
+        return jobs;
+    }
+
+    private List<Job> fetchAIJobs() throws IOException {
+        logger.info("Fetching from AI Jobs...");
+        List<Job> jobs = new ArrayList<>();
+        Document doc = retryJsoup("https://theaijobboard.com/", 3);
+        Elements rows = doc.select(".job-listing");
+        for (Element row : rows) {
+            String title = row.select("h3").text();
+            String company = row.select(".company-name").text();
+            String desc = "AI job posting";
+            String link = row.select("a").attr("href");
+            jobs.add(new Job(title, company, "Remote", desc, link, "AIJobs", LocalDateTime.now().toString()));
+        }
+        return jobs;
+    }
+
+    private List<Job> fetchToptal() throws IOException {
+        logger.info("Fetching from Toptal...");
+        List<Job> jobs = new ArrayList<>();
+        Document doc = retryJsoup("https://www.toptal.com/careers", 3);
+        Elements postings = doc.select("a.career-position");
+        for (Element post : postings) {
+            String title = post.select("h3").text();
+            String link = "https://www.toptal.com" + post.attr("href");
+            jobs.add(new Job(title, "Toptal", "Remote", "Toptal role", link, "Toptal", LocalDateTime.now().toString()));
+        }
+        return jobs;
+    }
+
+    private List<Job> fetchFlexJobs() throws IOException {
+        logger.info("Fetching from FlexJobs...");
+        List<Job> jobs = new ArrayList<>();
+        Document doc = retryJsoup("https://www.flexjobs.com/search?search=developer&location=Remote", 3);
+        Elements cards = doc.select("div.job");
+        for (Element card : cards) {
+            String title = card.select("a.job-title").text();
+            String company = card.select("div.company").text();
+            String desc = card.select("div.description").text();
+            String link = "https://www.flexjobs.com" + card.select("a").attr("href");
+            jobs.add(new Job(title, company, "Remote", desc, link, "FlexJobs", LocalDateTime.now().toString()));
+        }
+        return jobs;
+    }
+
+    private List<Job> fetchJSRemotely() throws IOException {
+        logger.info("Fetching from JS Remotely...");
+        List<Job> jobs = new ArrayList<>();
+        Document doc = retryJsoup("https://jsremotely.com/", 3);
+        Elements rows = doc.select("tr.job");
+        for (Element row : rows) {
+            String title = row.select("h2").text();
+            String company = row.select("h3").text();
+            String desc = "JS Remotely posting";
+            String link = "https://jsremotely.com" + row.select("a").attr("href");
+            jobs.add(new Job(title, company, "Remote", desc, link, "JSRemotely", LocalDateTime.now().toString()));
+        }
+        return jobs;
+    }
+
+    private List<Job> fetchOtta() throws IOException {
+        logger.info("Fetching from Otta...");
+        List<Job> jobs = new ArrayList<>();
+        Document doc = retryJsoup(" https://otta.com/", 3);
+        Elements cards = doc.select("div[data-testid=JobCard]");
+        for (Element card : cards) {
+            try {
+                String title = card.select("h3[data-testid=JobCard-title]").text();
+                String company = card.select("span[data-testid=JobCard-companyName]").text();
+                String location = card.select("span[data-testid=JobCard-location]").text();
+                if (!location.toLowerCase().contains("remote")) continue;
+                String desc = card.select("p[data-testid=JobCard-description]").text();
+                String link = "https://otta.com" + card.select("a[data-testid=JobCard-link]").attr("href");
+                jobs.add(new Job(title, company, "Remote", desc, link, "Otta", LocalDateTime.now().toString()));
+            } catch (Exception ignored) {
+            }
+        }
+        return jobs;
+    }
+
     private List<Job> removeDuplicates(List<Job> jobs) {
         Map<String, Job> map = new LinkedHashMap<>();
         for (Job j : jobs) {
@@ -260,7 +583,7 @@ public class JobFetcherService {
             mapper.writeValue(new File(fileName), jobs);
             logger.info("Exported jobs to: " + fileName);
         } catch (IOException e) {
-            logger.warning("Failed to export: " + e.getMessage());
+            logger.warn("Failed to export: " + e.getMessage());
         }
     }
 
@@ -274,7 +597,7 @@ public class JobFetcherService {
                         .get();
             } catch (IOException e) {
                 lastEx = e;
-                logger.warning("Retry " + (i + 1) + " failed for: " + url + " → " + e.getMessage());
+                logger.warn("Retry " + (i + 1) + " failed for: " + url + " → " + e.getMessage());
             }
         }
         throw lastEx != null ? lastEx : new IOException("All retries failed and no exception thrown for: " + url);
